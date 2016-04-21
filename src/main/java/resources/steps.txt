@@ -1,0 +1,28 @@
+
+public class Percolation {
+   public Percolation(int N)               // create N-by-N grid, with all sites blocked
+   public void open(int i, int j)          // open site (row i, column j) if it is not open already
+   public boolean isOpen(int i, int j)     // is site (row i, column j) open?
+   public boolean isFull(int i, int j)     // is site (row i, column j) full?
+   public boolean percolates()             // does the system percolate?
+
+   public static void main(String[] args)  // test client (optional)
+}
+
+
+open() method : validate the indices of the site, mark the site as open, perform WeightedQuickUnionUF operations that links the site in question to its open neighbors
+Percolation()  constructor and instance variables should facilitate the open() method's ability to do its job
+
+percolates(), isOpen(), and isFull()
+
+private method for validating indices
+Style checker
+Bug Checker
+% checkstyle-algs4 HelloWorld.java
+% checkstyle-algs4 *.java
+
+% findbugs-algs4 HelloWorld.class
+% findbugs-algs4 *.class
+
+https://www.youtube.com/watch?v=ZQ7Jpl6UvP4&list=PLUX6FBiUa2g4YWs6HkkCpXL6ru02i7y3Q&index=6
+http://localhost:51895/Percolator/algs4.jar/edu/princeton/cs/algs4/WeightedQuickUnionUF.java.html
