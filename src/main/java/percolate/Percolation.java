@@ -8,6 +8,7 @@ public class Percolation {
     private int N;
     private boolean[] grid1DIsOpen;
     private WeightedQuickUnionUF uf;
+    private WeightedQuickUnionUF uf2;
 
     public Percolation(int n) {
         if (n <= 0) throw new IllegalArgumentException("Grid size must be a positive integer");
@@ -16,6 +17,7 @@ public class Percolation {
         grid1DIsOpen = new boolean[n * n+1];
         // last element is n*n, but 0 and (n*n+1) are virtual roots
         uf = new WeightedQuickUnionUF(n * n + 2 );
+        uf2 = new WeightedQuickUnionUF(n * n + 1);
 
     }
 
@@ -27,7 +29,9 @@ public class Percolation {
             grid1DIsOpen[convertedIndex] = true;
 
             if(convertedIndex>0 && convertedIndex<=N)
-                uf.union(convertedIndex, 0);
+            { uf.union(convertedIndex, 0);
+                uf2.union(convertedIndex, 0);
+            }
             else     if(convertedIndex>N*(N-1) && convertedIndex<=N*N){
                 uf.union(convertedIndex, N*N+1);
             }
@@ -36,27 +40,32 @@ public class Percolation {
 
         // link to upper site if it exists
         if (validate(x, y - 1) && grid1DIsOpen[get1DIndex(x, y - 1)]) {
-            uf.union(convertedIndex, get1DIndex(x, y - 1)); }
+            uf.union(convertedIndex, get1DIndex(x, y - 1));
+            uf2.union(convertedIndex, get1DIndex(x, y - 1));
+
+        }
 
 
 
         // link to bottom site if it exists
         if (validate(x, y + 1) && grid1DIsOpen[get1DIndex(x, y + 1)]) {
             uf.union(convertedIndex, get1DIndex(x, y + 1));
+            uf2.union(convertedIndex, get1DIndex(x, y + 1));
 
         }
 
         // link to left site if it exists
         if (validate(x - 1, y) && grid1DIsOpen[get1DIndex(x - 1, y)]) {
-//            if(convertedIndex>N*(N-1) && convertedIndex<=N*N && isFull(x, y)){
-//                uf.union(get1DIndex(x - 1, y), N*N+1);
-//            }
             uf.union(convertedIndex, get1DIndex(x - 1, y));
+            uf2.union(convertedIndex, get1DIndex(x - 1, y));
+
         }
 
         // link to reight site if it exists
         if (validate(x + 1, y) && grid1DIsOpen[get1DIndex(x + 1, y)]) {
             uf.union(convertedIndex, get1DIndex(x + 1, y));
+            uf2.union(convertedIndex, get1DIndex(x + 1, y));
+
         }
 
     }
@@ -77,7 +86,7 @@ public class Percolation {
             convertedIndex = get1DIndex(x, y);
         } else throw new IndexOutOfBoundsException ("row index out of bounds");
 
-        return uf.connected(convertedIndex, 0);
+        return uf2.connected(convertedIndex, 0);
     }
 
     public boolean percolates(){
