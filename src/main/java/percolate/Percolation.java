@@ -2,9 +2,6 @@ package main.java.percolate;
 
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
-/**
- * Created by Giorgi on 4/19/2016.
- */
 public class Percolation {
     private int N;
     private boolean[] grid1DIsOpen;
@@ -29,7 +26,9 @@ public class Percolation {
         if (!isOpen(x, y)) {
             convertedIndex = get1DIndex(x, y);
             grid1DIsOpen[convertedIndex] = true;
-
+            if (N == 1) {
+                uf.union(0, 2);
+            }
             if (convertedIndex > 0 && convertedIndex <= N) {
                 uf.union(convertedIndex, 0);
                 uf2.union(convertedIndex, 0);

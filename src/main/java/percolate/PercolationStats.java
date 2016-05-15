@@ -5,8 +5,6 @@ import edu.princeton.cs.algs4.StdStats;
 
 public class PercolationStats {
     private double[] results;
-    private Percolation percolation;
-
     // perform T independent experiments on an N-by-N grid
     public PercolationStats(int N, int T) {
         if (N < 1 || T < 1) {
@@ -18,7 +16,7 @@ public class PercolationStats {
 
     private void calculateTreshold(int N, int T) {
         for (int i = 0; i < T; i++) {
-            percolation = new Percolation(N);
+            Percolation percolation = new Percolation(N);
             int count = 0;
             while (!percolation.percolates()) {
                 int randX = StdRandom.uniform(1, N + 1);
@@ -39,7 +37,8 @@ public class PercolationStats {
 
     // sample standard deviation of percolation threshold
     public double stddev() {
-        return results.length == 1 ? Double.NaN : StdStats.stddev(results);
+        if (results.length == 1) return  Double.NaN;
+        return StdStats.stddev(results);
     }
 
     // low  endpoint of 95% confidence interval
