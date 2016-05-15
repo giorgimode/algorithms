@@ -1,6 +1,6 @@
 package main.java.queues;
 
-import edu.princeton.cs.algs4.StdRandom;
+import edu.princeton.cs.algs4.StdOut;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -150,22 +150,9 @@ public class Deque<Item> implements Iterable<Item> {
         deque.addLast("fifi2");
         deque.addFirst("fifi3");
         deque.addFirst("fifi4");
-        String s = deque.removeFirst();
-//        s = deque.removeLast();
+        deque.removeFirst();
         deque.addFirst("fifi5");
-        //       s = deque.removeFirst();
-        deque.addFirst("fifi6");
-//        s = deque.removeFirst();
-//        s = deque.removeLast();
-        s = deque.removeLast();
-//        s = deque.removeFirst();
 
-        Iterator<String> iter = deque.iterator();
-        while (iter.hasNext()) {
-            System.out.print(iter.next() + " ");
-        }
-        System.out.println();
-
-        System.out.println(deque);
+        StdOut.println(deque);
     }
 }
