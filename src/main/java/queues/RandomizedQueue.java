@@ -26,7 +26,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         return N;
     }
 
-    public void resize(int max) {
+    private void resize(int max) {
         Item[] newItems = (Item[]) new Object[max];
         for (int i = 0; i < N; i++) {
             newItems[i] = items[i];
@@ -47,7 +47,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         int randIndex = StdRandom.uniform(N);
         Item randItem = items[randIndex];
         items[randIndex] = items[N - 1];
-        items[N] = null;
+        items[N - 1] = null;
         N--;
 
         if (N > 0 && N == items.length / 4) resize(items.length / 2);

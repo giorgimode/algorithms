@@ -58,16 +58,6 @@ public class Deque<Item> implements Iterable<Item> {
         N++;
     }
 
-    public void enqueue(Item item) {
-        Node<Item> oldlast = last;
-        last = new Node<Item>();
-        last.item = item;
-        last.next = null;
-        if (isEmpty()) first = last;
-        else oldlast.next = last;
-        N++;
-    }
-
     public Item removeFirst() {
         if (isEmpty()) throw new NoSuchElementException();
         Node<Item> oldFirst = first;
@@ -122,7 +112,7 @@ public class Deque<Item> implements Iterable<Item> {
 
         @Override
         public Item next() {
-            if (!hasNext()) throw new UnsupportedOperationException();
+            if (!hasNext()) throw new NoSuchElementException();
             Item item = current.item;
             current = current.next;
 
