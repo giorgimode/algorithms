@@ -12,17 +12,23 @@ public class BruteCollinearPoints {
     private int segmentSize = 0;
 
     public BruteCollinearPoints(Point[] points) {
-        // System.out.println(Arrays.asList(points));
+        if (points == null) throw new NullPointerException();
 
         Arrays.sort(points);
         //   System.out.println(Arrays.asList(points));
-        //   removeDuplicates(points);
+        checkDuplicates(points);
 
         for (int i = 0; i < points.length - 3; i++) {
             for (int j = i + 1; j < points.length - 2; j++) {
                 for (int k = j + 1; k < points.length - 1; k++) {
                     if (points[i].slopeTo(points[j]) == points[i].slopeTo(points[k])) {
                         for (int l = k + 1; l < points.length; l++) {
+                            if (points[i] == null || points[j] == null || points[k] == null || points[l] == null)
+                                throw new NullPointerException();
+                            if (points[i].compareTo(points[j]) == 0 || points[j].compareTo(points[k]) == 0 ||
+                                    points[k].compareTo(points[l]) == 0)
+                                throw new NullPointerException();
+
                             if (points[i].slopeTo(points[j]) == points[i].slopeTo(points[l])) {
                                 lineSegments[segmentSize++] = new LineSegment(points[i], points[l]);
                                 if (segmentSize == lineSegments.length)
@@ -35,7 +41,7 @@ public class BruteCollinearPoints {
         }
     }
 
-    private void removeDuplicates(Point[] points) {
+    private void checkDuplicates(Point[] points) {
         for (int i = 1; i < points.length; i++) {
             if (points[i].compareTo(points[i - 1]) == 0)
                 throw new IllegalArgumentException("Duplicated entries in given points.");
