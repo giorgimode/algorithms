@@ -8,44 +8,54 @@ import edu.princeton.cs.algs4.StdOut;
 import java.util.Arrays;
 
 public class BruteCollinearPoints {
-    private LineSegment[] lineSegments = new LineSegment[2];
+    private LineSegment[] mutableLineSegments = new LineSegment[2];
+    private LineSegment[] lineSegments;
+
     private int segmentSize = 0;
 
     public BruteCollinearPoints(Point[] points) {
         if (points == null) throw new NullPointerException();
+        if (points.length < 4) return;
+        Point[] mutablePoints = new Point[points.length];
+        for (int i = 0; i < points.length; i++) {
+            mutablePoints[i] = points[i];
+        }
 
-        Arrays.sort(points);
-        //   System.out.println(Arrays.asList(points));
-        checkDuplicates(points);
+    Arrays.sort(mutablePoints);
+    if (mutablePoints[0] == null || mutablePoints[1] == null ||
+            mutablePoints[2] == null)
+        throw new NullPointerException();
+    if (mutablePoints[0].compareTo(mutablePoints[1]) == 0 ||
+            mutablePoints[1].compareTo(mutablePoints[2]) == 0)
+        throw new IllegalArgumentException();
 
-        for (int i = 0; i < points.length - 3; i++) {
-            for (int j = i + 1; j < points.length - 2; j++) {
-                for (int k = j + 1; k < points.length - 1; k++) {
-                    if (points[i].slopeTo(points[j]) == points[i].slopeTo(points[k])) {
-                        for (int l = k + 1; l < points.length; l++) {
-                            if (points[i] == null || points[j] == null || points[k] == null || points[l] == null)
-                                throw new NullPointerException();
-                            if (points[i].compareTo(points[j]) == 0 || points[j].compareTo(points[k]) == 0 ||
-                                    points[k].compareTo(points[l]) == 0)
-                                throw new NullPointerException();
 
-                            if (points[i].slopeTo(points[j]) == points[i].slopeTo(points[l])) {
-                                lineSegments[segmentSize++] = new LineSegment(points[i], points[l]);
-                                if (segmentSize == lineSegments.length)
-                                    resize(lineSegments.length * 2);
-                            }
-                        }
+
+    for (int i = 0; i < mutablePoints.length - 3; i++) {
+        for (int j = i + 1; j < mutablePoints.length - 2; j++) {
+            for (int k = j + 1; k < mutablePoints.length - 1; k++) {
+                if (mutablePoints[i].slopeTo(mutablePoints[j]) ==
+                        mutablePoints[i].slopeTo(mutablePoints[k])) {
+                    for (int l = k + 1; l < mutablePoints.length; l++) {
+                        if (mutablePoints[l] == null)
+                            throw new NullPointerException();
+                        if (mutablePoints[k].compareTo(mutablePoints[l]) == 0)
+                            throw new IllegalArgumentException();
+
+                    if (mutablePoints[i].slopeTo(mutablePoints[j]) ==
+                            mutablePoints[i].slopeTo(mutablePoints[l])) {
+                        mutableLineSegments[segmentSize++] =
+                                new LineSegment(mutablePoints[i], mutablePoints[l]);
+                        if (segmentSize == mutableLineSegments.length)
+                            resize(mutableLineSegments.length * 2);
+                    }
                     }
                 }
             }
         }
     }
-
-    private void checkDuplicates(Point[] points) {
-        for (int i = 1; i < points.length; i++) {
-            if (points[i].compareTo(points[i - 1]) == 0)
-                throw new IllegalArgumentException("Duplicated entries in given points.");
-        }
+        resize(segmentSize);
+        lineSegments = mutableLineSegments;
     }
 
     public int numberOfSegments() {
@@ -53,16 +63,16 @@ public class BruteCollinearPoints {
     }
 
     public LineSegment[] segments() {
-        resize(segmentSize);
-        return lineSegments;
+        if (segmentSize == 0) return new LineSegment[0];
+        return lineSegments.clone();
     }
 
     private void resize(int max) {
         LineSegment[] newItems = new LineSegment[max];
         for (int i = 0; i < segmentSize; i++) {
-            newItems[i] = lineSegments[i];
+            newItems[i] = mutableLineSegments[i];
         }
-        lineSegments = newItems;
+        mutableLineSegments = newItems;
     }
 
     public static void main(String[] args) {

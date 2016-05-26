@@ -7,12 +7,15 @@ import edu.princeton.cs.algs4.StdOut;
 import java.util.Arrays;
 
 public class FastCollinearPoints {
-    private LineSegment[] lineSegments = new LineSegment[2];
+    private LineSegment[] mutableLineSegments = new LineSegment[2];
+    private LineSegment[] lineSegments;
 
     private int segmentSize = 0;
 
     public FastCollinearPoints(Point[] points) {
         if (points == null) throw new NullPointerException();
+        if (points.length < 4) return;
+
         Point[] copyPoints = new Point[points.length];
         for (int i = 0; i < points.length; i++) {
             copyPoints[i] = points[i];
@@ -20,26 +23,47 @@ public class FastCollinearPoints {
 
         for (int i = 0; i < points.length; i++) {
             Arrays.sort(copyPoints, points[i].slopeOrder());
+            if (points[i].compareTo(copyPoints[1]) == 0)
+                throw new IllegalArgumentException();
 
             int m = 0;
             Point[] collinearPoints = new Point[3];
             for (int j = 1; j < points.length - 1; j++) {
-                int result = points[i].slopeOrder().compare(copyPoints[j], copyPoints[j + 1]);
+                if (copyPoints[j] == null || points[i] == null)
+                    throw new NullPointerException();
+
+       int result = points[i].slopeOrder().compare(copyPoints[j], copyPoints[j + 1]);
 
                 if (result == 0) {
                     collinearPoints[m++] = copyPoints[j];
                     collinearPoints[m] = copyPoints[j + 1];
-                    if (m >= collinearPoints.length - 1) collinearPoints = resizeCollinearPoints(collinearPoints);
+                    if (m >= collinearPoints.length - 1) collinearPoints =
+                            resizeCollinearPoints(collinearPoints);
                 }
 
                 if ((result != 0 || j == points.length - 2) && m >= 2) {
                     collinearPoints[++m] = points[i];
                     Arrays.sort(collinearPoints, 0, m + 1);
-                    lineSegments[segmentSize++] = new LineSegment(collinearPoints[0], collinearPoints[m]);
+                    LineSegment collinearSegment =
+                            new LineSegment(collinearPoints[0], collinearPoints[m]);
+                    boolean duplicateSegment = false;
+                    for (LineSegment lineSegment : mutableLineSegments) {
+                        if (lineSegment != null)
+                            if (collinearSegment.toString()
+                                    .equals(lineSegment.toString())) {
+                                duplicateSegment = true;
+                                break;
+                            }
+                    }
+                    if (duplicateSegment) {
+                        m = 0;
+                        continue;
+                    }
+                    mutableLineSegments[segmentSize++] = collinearSegment;
                     collinearPoints = new Point[3];
                     m = 0;
-                    if (segmentSize == lineSegments.length)
-                        resize(lineSegments.length * 2);
+                    if (segmentSize == mutableLineSegments.length)
+                        resize(mutableLineSegments.length * 2);
                 } else if ((result != 0 || j == points.length - 2) && m < 3) {
                     collinearPoints = new Point[3];
                     m = 0;
@@ -47,15 +71,16 @@ public class FastCollinearPoints {
 
             }
         }
-
+        resize(segmentSize);
+        lineSegments = mutableLineSegments;
     }
 
     private void resize(int max) {
         LineSegment[] newItems = new LineSegment[max];
         for (int i = 0; i < segmentSize; i++) {
-            newItems[i] = lineSegments[i];
+            newItems[i] = mutableLineSegments[i];
         }
-        lineSegments = newItems;
+        mutableLineSegments = newItems;
     }
 
     private Point[] resizeCollinearPoints(Point[] collinearPoints) {
@@ -71,15 +96,8 @@ public class FastCollinearPoints {
     }
 
     public LineSegment[] segments() {
-         resize(segmentSize);
-        return lineSegments;
-    }
-
-    private void checkDuplicates(Point[] points) {
-        for (int i = 1; i < points.length; i++) {
-            if (points[i].compareTo(points[i - 1]) == 0)
-                throw new IllegalArgumentException("Duplicated entries in given points.");
-        }
+        if (segmentSize == 0) return new LineSegment[0];
+        return lineSegments.clone();
     }
 
     public static void main(String[] args) {
@@ -93,7 +111,7 @@ public class FastCollinearPoints {
             int y = in.readInt();
             points[i] = new Point(x, y);
         }
-
+        StdDraw.setPenColor(StdDraw.BOOK_RED);
         // draw the points
         StdDraw.show(0);
         StdDraw.setXscale(0, 32768);
