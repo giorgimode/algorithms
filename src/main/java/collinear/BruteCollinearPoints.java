@@ -16,31 +16,33 @@ public class BruteCollinearPoints {
     public BruteCollinearPoints(Point[] points) {
         if (points == null) throw new NullPointerException();
         if (points.length < 4) return;
-        Point[] mutablePoints = new Point[points.length];
-        for (int i = 0; i < points.length; i++) {
-            mutablePoints[i] = points[i];
-        }
+        Point[] mutablePoints = points.clone();
 
     Arrays.sort(mutablePoints);
-    if (mutablePoints[0] == null || mutablePoints[1] == null ||
-            mutablePoints[2] == null)
-        throw new NullPointerException();
-    if (mutablePoints[0].compareTo(mutablePoints[1]) == 0 ||
-            mutablePoints[1].compareTo(mutablePoints[2]) == 0)
-        throw new IllegalArgumentException();
+    if (mutablePoints[mutablePoints.length - 1] == null ||
+            mutablePoints[mutablePoints.length - 2] == null ||
+            mutablePoints[mutablePoints.length - 3] == null)
+                throw new NullPointerException();
+    if (mutablePoints[mutablePoints.length - 1].
+            compareTo(mutablePoints[mutablePoints.length - 2]) == 0 ||
+                mutablePoints[mutablePoints.length - 2].
+                    compareTo(mutablePoints[mutablePoints.length - 3]) == 0)
+                throw new IllegalArgumentException();
 
 
 
     for (int i = 0; i < mutablePoints.length - 3; i++) {
+
+        if (mutablePoints[i] == null)
+            throw new NullPointerException();
+        if (mutablePoints[i].compareTo(mutablePoints[i+1]) == 0)
+            throw new IllegalArgumentException();
+
         for (int j = i + 1; j < mutablePoints.length - 2; j++) {
             for (int k = j + 1; k < mutablePoints.length - 1; k++) {
                 if (mutablePoints[i].slopeTo(mutablePoints[j]) ==
                         mutablePoints[i].slopeTo(mutablePoints[k])) {
                     for (int l = k + 1; l < mutablePoints.length; l++) {
-                        if (mutablePoints[l] == null)
-                            throw new NullPointerException();
-                        if (mutablePoints[k].compareTo(mutablePoints[l]) == 0)
-                            throw new IllegalArgumentException();
 
                     if (mutablePoints[i].slopeTo(mutablePoints[j]) ==
                             mutablePoints[i].slopeTo(mutablePoints[l])) {
