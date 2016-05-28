@@ -13,14 +13,19 @@ public class FastCollinearPoints {
 
     public FastCollinearPoints(Point[] points) {
         if (points == null) throw new NullPointerException();
-        if (points.length < 4) return;
+
 
         Point[] copyPoints = points.clone();
+        if (points.length < 4) {
+            Arrays.sort(copyPoints);
+            checkDuplicatedEntries(copyPoints, copyPoints.length);
+            return;
+        }
 
         for (int i = 0; i < points.length; i++) {
             Arrays.sort(copyPoints, points[i].slopeOrder());
             if (i < points.length - 1)
-                if (points[i].compareTo(points[i + 1]) == 0)
+                if (points[i].compareTo(copyPoints[1]) == 0)
                     throw new IllegalArgumentException();
 
             int m = 0;
@@ -30,32 +35,45 @@ public class FastCollinearPoints {
                 if (copyPoints[j] == null || points[i] == null)
                     throw new NullPointerException();
 
-                int result = points[i].slopeOrder()
-                        .compare(copyPoints[j], copyPoints[j + 1]);
-                if (copyPoints[j].compareTo(min) < 0) min = copyPoints[j];
-                if (copyPoints[j].compareTo(max) > 0) max = copyPoints[j];
-                if (result == 0) {
+                int result = points[i].slopeOrder().compare(copyPoints[j], copyPoints[j + 1]);
 
+                if (result == 0) {
+                    if (copyPoints[j].compareTo(min) < 0) min = copyPoints[j];
+                    if (copyPoints[j].compareTo(max) > 0) max = copyPoints[j];
+                    if (copyPoints[j + 1].compareTo(min) < 0) min = copyPoints[j + 1];
+                    if (copyPoints[j + 1].compareTo(max) > 0) max = copyPoints[j + 1];
                     m++;
                 }
 
-            if ((result != 0 || j == points.length - 2) && m >= 2) {
-                if (min == points[i])
-                    lineSegments[segmentSize++] = new LineSegment(min, max);
-                m = 0;
-                min = points[i];
-                max = points[i];
-                if (segmentSize == lineSegments.length)
-                    resize(lineSegments.length * 2);
-            } else if ((result != 0 || j == points.length - 2) && m < 2) {
-                m = 0;
-                min = points[i];
-                max = points[i];
-            }
+                if ((result != 0 || j == points.length - 2) && m >= 2) {
+                    if (min == points[i]) {
+                        lineSegments[segmentSize++] = new LineSegment(min, max);
 
+                        if (segmentSize == lineSegments.length)
+                            resize(lineSegments.length * 2);
+                    }
+                    m = 0;
+                    min = points[i];
+                    max = points[i];
+
+                } else if ((result != 0 || j == points.length - 2) && m < 2) {
+                    m = 0;
+                    min = points[i];
+                    max = points[i];
+                }
             }
         }
         resize(segmentSize);
+    }
+
+
+    private void checkDuplicatedEntries(Point[] points, int length) {
+        for (int i = 0; i < length - 1; i++) {
+            if (points[i].compareTo(points[i + 1]) == 0) {
+                throw new IllegalArgumentException("Duplicated entries in given points.");
+            }
+
+        }
     }
 
     private void resize(int max) {
@@ -76,6 +94,7 @@ public class FastCollinearPoints {
     }
 
     public static void main(String[] args) {
+        args[0] = ".\\src\\main\\java\\resources\\collinear\\input400.txt";
 
         // read the N points from a file
         In in = new In(args[0]);

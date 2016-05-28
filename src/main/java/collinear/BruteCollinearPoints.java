@@ -15,49 +15,53 @@ public class BruteCollinearPoints {
 
     public BruteCollinearPoints(Point[] points) {
         if (points == null) throw new NullPointerException();
-        if (points.length < 4) return;
-        Point[] mutablePoints = points.clone();
 
-    Arrays.sort(mutablePoints);
-    if (mutablePoints[mutablePoints.length - 1] == null ||
-            mutablePoints[mutablePoints.length - 2] == null ||
-            mutablePoints[mutablePoints.length - 3] == null)
+        Point[] mutablePoints = points.clone();
+        Arrays.sort(mutablePoints);
+        if (points.length < 4) {
+            checkDuplicatedEntries(mutablePoints, 0, mutablePoints.length);
+            return;
+        }
+        else checkDuplicatedEntries(mutablePoints,
+                mutablePoints.length - 3, mutablePoints.length);
+
+        for (int i = 0; i < mutablePoints.length - 3; i++) {
+
+            if (mutablePoints[i] == null)
                 throw new NullPointerException();
-    if (mutablePoints[mutablePoints.length - 1].
-            compareTo(mutablePoints[mutablePoints.length - 2]) == 0 ||
-                mutablePoints[mutablePoints.length - 2].
-                    compareTo(mutablePoints[mutablePoints.length - 3]) == 0)
+            if (mutablePoints[i].compareTo(mutablePoints[i + 1]) == 0)
                 throw new IllegalArgumentException();
 
-
-
-    for (int i = 0; i < mutablePoints.length - 3; i++) {
-
-        if (mutablePoints[i] == null)
-            throw new NullPointerException();
-        if (mutablePoints[i].compareTo(mutablePoints[i+1]) == 0)
-            throw new IllegalArgumentException();
-
-        for (int j = i + 1; j < mutablePoints.length - 2; j++) {
-            for (int k = j + 1; k < mutablePoints.length - 1; k++) {
-                if (mutablePoints[i].slopeTo(mutablePoints[j]) ==
-                        mutablePoints[i].slopeTo(mutablePoints[k])) {
-                    for (int l = k + 1; l < mutablePoints.length; l++) {
-
+            for (int j = i + 1; j < mutablePoints.length - 2; j++) {
+                for (int k = j + 1; k < mutablePoints.length - 1; k++) {
                     if (mutablePoints[i].slopeTo(mutablePoints[j]) ==
-                            mutablePoints[i].slopeTo(mutablePoints[l])) {
-                        mutableLineSegments[segmentSize++] =
+                            mutablePoints[i].slopeTo(mutablePoints[k])) {
+                        for (int l = k + 1; l < mutablePoints.length; l++) {
+
+                            if (mutablePoints[i].slopeTo(mutablePoints[j]) ==
+                                    mutablePoints[i].slopeTo(mutablePoints[l])) {
+                                mutableLineSegments[segmentSize++] =
                                 new LineSegment(mutablePoints[i], mutablePoints[l]);
-                        if (segmentSize == mutableLineSegments.length)
-                            resize(mutableLineSegments.length * 2);
-                    }
+                                if (segmentSize == mutableLineSegments.length)
+                                    resize(mutableLineSegments.length * 2);
+                            }
+                        }
                     }
                 }
             }
         }
-    }
         resize(segmentSize);
         lineSegments = mutableLineSegments;
+    }
+
+
+    private void checkDuplicatedEntries(Point[] points, int start, int end) {
+    for (int i = start; i < end - 1; i++) {
+        if (points[i].compareTo(points[i + 1]) == 0) {
+        throw new IllegalArgumentException("Duplicated entries in given points.");
+        }
+
+    }
     }
 
     public int numberOfSegments() {
@@ -78,7 +82,6 @@ public class BruteCollinearPoints {
     }
 
     public static void main(String[] args) {
-
         // read the N points from a file
         In in = new In(args[0]);
         int N = in.readInt();
@@ -89,6 +92,7 @@ public class BruteCollinearPoints {
             points[i] = new Point(x, y);
         }
 
+        StdDraw.setPenColor(StdDraw.BOOK_RED);
         // draw the points
         StdDraw.show(0);
         StdDraw.setXscale(0, 32768);
