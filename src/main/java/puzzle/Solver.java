@@ -114,7 +114,7 @@ public class Solver {
 
      public static void main(String[] args) {
         // create initial board from file
-        In in = new In(".\\src\\main\\java\\resources\\puzzle\\puzzle3x3-unsolvable.txt");
+        In in = new In(".\\src\\main\\java\\resources\\puzzle\\puzzle4x4-80.txt");
         int N = in.readInt();
         int[][] blocks = new int[N][N];
         for (int i = 0; i < N; i++)
