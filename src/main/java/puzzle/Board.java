@@ -30,11 +30,10 @@ public class Board {
             }
 
         }
-        N = blocks.length;
     }
 
     public int dimension() {
-        return boardArray.length;
+        return N;
     }
 
     public int hamming() {
@@ -66,33 +65,22 @@ public class Board {
     }
 
     public boolean isGoal() {
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                if (boardArray[i][j] == 0) continue;
-                Point targetPos = targetPos(boardArray[i][j]);
-                if (i != targetPos.row || j != targetPos.col) return false;
-            }
+      return hamming() == 0;
         }
-
-
-        return true;
-    }
 
     public Board twin() {
         int[][] newBoardArray = boardArray.clone();
 
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                if (newBoardArray[i][j] != 0 && newBoardArray[i][j + 1] != 0) {
-                    int temp = newBoardArray[i][j];
-                    newBoardArray[i][j] = newBoardArray[i][j + 1];
-                    newBoardArray[i][j + 1] = temp;
-                    return new Board(newBoardArray);
-                }
-            }
+        if (newBoardArray[0][0] != 0 && newBoardArray[0][1] != 0) {
+            // switch first two blocks
+            newBoardArray[0][0] = newBoardArray[0][1];
+            newBoardArray[0][1] = newBoardArray[0][0];
+        } else {
+            // otherwise, switch first two blocks on second row
+            newBoardArray[1][0] = newBoardArray[1][1];
+            newBoardArray[1][1] = newBoardArray[1][0];
         }
-
-        return null;
+        return new Board(newBoardArray);
     }
 
     public boolean equals(Object y) {
