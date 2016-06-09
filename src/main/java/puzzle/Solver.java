@@ -7,7 +7,7 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class Solver {
 
-    private class SearchNode implements Comparable<SearchNode> {
+    private static class SearchNode implements Comparable<SearchNode> {
         private Board board;
         private int moves;
         private SearchNode previous;
@@ -29,6 +29,11 @@ public class Solver {
         public int compareTo(SearchNode other) {
             if (this.priority > other.priority) return 1;
             if (this.priority < other.priority) return -1;
+            if (this.priority == other.priority) {
+                if (this.board.manhattan() > other.board.manhattan())
+                    return 1;
+                else return -1;
+            }
 
             return 0;
         }
@@ -44,20 +49,20 @@ public class Solver {
     }
 
     private MinPQ<SearchNode> queue;
-    private MinPQ<SearchNode> twinQueue;
+      private MinPQ<SearchNode> twinQueue;
     private boolean isSolvable;
     private SearchNode solutionNode;
 
     public Solver(Board initial) {
         queue = new MinPQ<>();
-        twinQueue = new MinPQ<>();
+             twinQueue = new MinPQ<>();
         isSolvable = false;
 
         SearchNode initialNode = new SearchNode(initial, null);
         SearchNode twinitialNode = new SearchNode(initial.twin(), null);
 
         queue.insert(initialNode);
-        twinQueue.insert(twinitialNode);
+             twinQueue.insert(twinitialNode);
 
         while (solutionNode == null) {
             solutionNode = expand(queue);
@@ -70,6 +75,7 @@ public class Solver {
                 isSolvable = false;
             }
         }
+        isSolvable = false;
     }
 
     private SearchNode expand(MinPQ<SearchNode> q) {
@@ -78,7 +84,8 @@ public class Solver {
             return minNode;
         }
         for (Board neighbor : minNode.board.neighbors()) {
-            if (minNode.previous != null && neighbor.equals(minNode.previous.board)) {
+            if (minNode.previous != null
+                    && neighbor.equals(minNode.previous.board)) {
                 continue;
             }
             q.insert(new SearchNode(neighbor, minNode));
@@ -112,9 +119,9 @@ public class Solver {
         return boardQueue;
     }
 
-     public static void main(String[] args) {
+    public static void main(String[] args) {
         // create initial board from file
-        In in = new In(".\\src\\main\\java\\resources\\puzzle\\puzzle4x4-80.txt");
+        In in = new In(".\\src\\main\\java\\resources\\puzzle\\puzzle47.txt");
         int N = in.readInt();
         int[][] blocks = new int[N][N];
         for (int i = 0; i < N; i++)

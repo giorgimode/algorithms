@@ -5,11 +5,12 @@ import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
 public class Board {
-    private int[][] board;
-    private int N;
+    private char[][] board;
+    private char N;
     private Point blankPoint;
+    private int manhattan;
 
-    private class Point {
+    private static class Point {
         private int row;
         private int col;
     }
@@ -17,12 +18,13 @@ public class Board {
     public Board(int[][] blocks) {
         if (blocks == null) throw new NullPointerException();
         blankPoint = new Point();
-        N = blocks.length;
-        board = new int[N][N];
+        N = (char) blocks.length;
+        board = new char[N][N];
+        manhattan = -1;
 
-        for (int row = 0; row < N; row++) {
-            for (int col = 0; col < N; col++) {
-                board[row][col] = blocks[row][col];
+        for (char row = 0; row < N; row++) {
+            for (char col = 0; col < N; col++) {
+                board[row][col] = (char) blocks[row][col];
                 if (board[row][col] == 0) {
                     blankPoint.row = row;
                     blankPoint.col = col;
@@ -49,16 +51,23 @@ public class Board {
     }
 
     public int manhattan() {
-        int manhattan = 0;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
+        if (manhattan != -1) {
+            return manhattan;
+        }
+
+
+        int distance = 0;
+        for (char i = 0; i < N; i++) {
+            for (char j = 0; j < N; j++) {
                 if (board[i][j] == 0) continue;
                 Point targetPos = targetPos(board[i][j]);
                 if (i == targetPos.row && j == targetPos.col) continue;
-                manhattan += Math.abs(i - targetPos.row)
+                distance += Math.abs(i - targetPos.row)
                         + Math.abs(j - targetPos.col);
             }
         }
+        manhattan = distance;
+
         return manhattan;
     }
 
@@ -72,15 +81,15 @@ public class Board {
         return true;
     }
 
-    private int[][] copyBoard(int[][] src) {
-        int[][] tar = new int[src.length][src.length];
-        for (int i = 0; i < src.length; i++)
-            for (int j = 0; j < src.length; j++) tar[i][j] = src[i][j];
+    private int[][] copyBoard() {
+        int[][] tar = new int[board.length][board.length];
+        for (int i = 0; i < board.length; i++)
+            for (int j = 0; j < board.length; j++) tar[i][j] = board[i][j];
         return tar;
     }
 
     public Board twin() {
-        int[][] newBoardArray = copyBoard(board);
+        int[][] newBoardArray = copyBoard();
 
         if (newBoardArray[0][0] != 0 && newBoardArray[0][1] != 0) {
             // switch first two blocks
@@ -97,7 +106,7 @@ public class Board {
     public boolean equals(Object y) {
         if (y == this) return true;
         if (y == null) return false;
-        if (!(y instanceof Board)) return false;
+        if (y.getClass() != this.getClass()) return false;
         if (((Board) y).N != this.N) return false;
 
         for (int i = 0; i < N; i++) {
@@ -114,7 +123,7 @@ public class Board {
         Stack<Board> neighbors = new Stack<>();
 
         if (blankPoint.col > 0) {
-            int[][] copyBoardArray = copyBoard(board);
+            int[][] copyBoardArray = copyBoard();
 
             copyBoardArray[blankPoint.row][blankPoint.col] = board[blankPoint.row][blankPoint.col - 1];
             copyBoardArray[blankPoint.row][blankPoint.col - 1] = board[blankPoint.row][blankPoint.col];
@@ -122,7 +131,7 @@ public class Board {
         }
 
         if (blankPoint.col < N - 1) {
-            int[][] copyBoardArray = copyBoard(board);
+            int[][] copyBoardArray = copyBoard();
 
             copyBoardArray[blankPoint.row][blankPoint.col] = board[blankPoint.row][blankPoint.col + 1];
             copyBoardArray[blankPoint.row][blankPoint.col + 1] = board[blankPoint.row][blankPoint.col];
@@ -130,7 +139,7 @@ public class Board {
         }
 
         if (blankPoint.row > 0) {
-            int[][] copyBoardArray = copyBoard(board);
+            int[][] copyBoardArray = copyBoard();
 
             copyBoardArray[blankPoint.row][blankPoint.col] = board[blankPoint.row - 1][blankPoint.col];
             copyBoardArray[blankPoint.row - 1][blankPoint.col] = board[blankPoint.row][blankPoint.col];
@@ -138,7 +147,7 @@ public class Board {
         }
 
         if (blankPoint.row < N - 1) {
-            int[][] copyBoardArray = copyBoard(board);
+            int[][] copyBoardArray = copyBoard();
 
             copyBoardArray[blankPoint.row][blankPoint.col] = board[blankPoint.row + 1][blankPoint.col];
             copyBoardArray[blankPoint.row + 1][blankPoint.col] = board[blankPoint.row][blankPoint.col];
@@ -150,15 +159,15 @@ public class Board {
     }
 
     public String toString() {
-        StringBuilder s = new StringBuilder();
-        s.append(N + "\n");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append((int)N + "\n");
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                s.append(String.format("%2d ", board[i][j]));
+                stringBuilder.append(String.format("%d ", (int)board[i][j]));
             }
-            s.append("\n");
+            stringBuilder.append("\n");
         }
-        return s.toString();
+        return stringBuilder.toString();
     }
 
     private Point targetPos(int num) {
